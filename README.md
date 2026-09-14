@@ -2,6 +2,21 @@
 
 Demo web móvil basada en las cinco pantallas y la guía Terra del archivo Stitch. React + TypeScript, con Vinext/Vite y componentes accesibles de Base UI.
 
+## GitHub Pages
+
+URL del prototipo: https://s82833.github.io/fuerte-app/
+
+La publicación usa `.github/workflows/pages.yml`: comprueba cada PR a `develop` y publica al integrar cambios en esa rama. La salida estática es `dist-pages/`, con rutas bajo `/fuerte-app/`. No requiere un servidor ni credenciales adicionales.
+
+```sh
+npm ci
+npm run build:pages
+node scripts/pages-check.mjs
+npm run preview:pages
+```
+
+Las tres comprobaciones de Pages detectan primero una mutación y luego validan las rutas de recursos, el manifiesto y el aislamiento del caché. Cada compilación cambia la versión del caché según su contenido. La navegación usa fragmentos de URL, por lo que los enlaces a pantallas funcionan al recargar en Pages.
+
 ## Iniciar
 
 Requiere Node.js 22.13 o superior.
@@ -43,4 +58,4 @@ Se preservó la identidad visual del ZIP (Literata, Nunito Sans, crema y verde, 
 
 Antes de usar con pacientes reales hacen falta revisión clínica, permisos y roles, almacenamiento seguro, protección de datos, autenticación y un diseño de sincronización. Esta versión no calcula dosis ni sustituye atención clínica.
 
-La publicación está pendiente de autorización del propietario. El proyecto de Sites ya está registrado en `.openai/hosting.json`, pero no está publicado.
+La configuración original de Vinext/Worker y `.openai/hosting.json` se conserva como referencia. GitHub Pages utiliza la entrada estática `pages-entry.tsx` y `vite.pages.config.ts`; no depende de Sites.

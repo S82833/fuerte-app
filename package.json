@@ -12,7 +12,9 @@
     "lint": "oxlint app lib scripts",
     "format": "oxfmt",
     "postbuild": "node scripts/precache.mjs",
-    "test": "node scripts/domain-check.mjs"
+    "test": "node scripts/domain-check.mjs",
+    "build:pages": "vite build --config vite.pages.config.ts && node scripts/precache.mjs dist-pages",
+    "preview:pages": "vite preview --config vite.pages.config.ts"
   },
   "dependencies": {
     "react": "19.2.6",

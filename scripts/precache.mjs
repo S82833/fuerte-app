@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+const root = process.argv[2] || 'dist/client';
+const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? walk(path.join(dir, entry.name)) : [path.join(dir, entry.name)]);
+const files = walk(root).filter(file => /\.(js|css|woff2|png|jpg|svg|webmanifest|html)$/.test(file) && path.basename(file) !== 'sw.js').sort();
+const hash = createHash('sha256');
+for (const file of files) hash.update(path.relative(root, file).replaceAll('\\', '/')).update(fs.readFileSync(file));
+const workerPath = path.join(root, 'sw.js');
+const worker = fs.readFileSync(workerPath, 'utf8');
+hash.update(worker);
+fs.writeFileSync(workerPath, worker.replace('__BUILD_VERSION__', hash.digest('hex').slice(0, 16)));
+fs.writeFileSync(path.join(root, 'precache.json'), JSON.stringify(files.map(file => path.relative(root, file).replaceAll('\\', '/'))));
+console.log(`Offline assets: ${files.length}`);

@@ -78,7 +78,7 @@ Consumo medido tras la prueba: app 57.56 MiB y AI 19.69 MiB en reposo.
 USIL respondió HTTP 307 hacia login e IAA HTTP 200. Nginx validó su configuración.
 
 Esta primera versión aún no ofrece recuperación de contraseña por correo, verificación
-de correo, roles clínicos compartidos, avisos programados, carga de documentos, exportación
+de correo, avisos programados, carga de documentos, exportación
 ni eliminación desde la interfaz. No tiene validación clínica. Las respuestas pueden
 equivocarse y no deben determinar diagnósticos o cambios de dosis.
 El campo de pauta guarda la indicación declarada por el cuidador, no una prescripción verificada.
@@ -102,3 +102,44 @@ Límites conocidos: protección de volumen mediante permisos, sin cifrado indepe
 de SQLite; el límite de login actualmente usa la dirección del proxy y puede afectar
 a varias personas a la vez. El registro público carece de verificación de correo.
 No presentar esta versión como lista para operación clínica a escala.
+
+## Ampliación de centros y personal de salud, 21/09/2026
+
+Publicada con las tablas adicionales platform_admins, clinics, staff_memberships,
+enrollments y clinical_events. Antes se ensayó el esquema dentro de BEGIN IMMEDIATE
+y ROLLBACK: 1 ms, lista de tablas idéntica tras la reversión, integrity_check=ok.
+Backup previo: `/data/backup-before-clinics-1790020411566.sqlite`, con permisos privados.
+El propietario confirmó que creó su cuenta y se le asignó superadministrador; no se
+concede este rol por nombre de correo ni por registrarse primero. No hay alta automática
+de superadministradores ni credenciales de demo publicadas.
+
+- Superadministrador: centros, lista global de usuarios y roles de cada centro.
+- Administrador de centro: equipo y todos los pacientes del propio centro. Solo el
+  superadministrador puede nombrar o cambiar administradores de centros.
+- Enfermería: pacientes asignados, historial y notas de seguimiento compartidas con
+  el cuidador. Puede programar el siguiente contacto al registrar seguimiento.
+- Permisos configurables: read_patients, write_followups, manage_assignments, manage_staff.
+  manage_assignments amplía la vista a todos los pacientes del mismo centro.
+- Cuidador: solicita vinculación con consentimiento explícito; un administrador la
+  acepta y asigna al responsable. El cuidador ve las notas compartidas del equipo.
+- El chat también recibe los últimos treinta eventos clínicos compartidos y el próximo
+  seguimiento, siempre mediante el perfil que pertenece a la sesión del cuidador.
+- Panel con filtros de seguimientos vencidos, dificultades de siete días y ausencia
+  de registros de dosis en tres días. Son indicadores administrativos, no diagnósticos.
+- La semana va de lunes a domingo, en fecha de Perú, y consulta el historial completo
+  de esos días. Una dosis registrada se marca con check; una dificultad, con otra señal.
+
+API adicional: `/workspace`, `/centers`, `/platform/clinics`, `/platform/users`,
+`/clinics/:id/overview`, `/clinics/:id/staff`, `/clinics/:id/patients`,
+`/clinics/:id/patients/:enrollment/events`, `/patients/:id/care` y `/patients/:id/week`.
+Los pacientes y usuarios se paginan de treinta en treinta. Hasta cien centros y cien
+miembros de equipo por respuesta en esta versión; no asumir escala ilimitada.
+Una enfermera desactivada pierde acceso inmediatamente. Toda autorización se vuelve a
+consultar en el servidor. No se comparten conversaciones privadas de chat con el personal.
+
+Validación: product-check y clinical-check pasaron. Una mutación que quitó el filtro de
+enfermera asignada fue detectada (RED) y la restauración pasó (GREEN). Probados también
+consentimiento, denegación entre centros, permisos, revocación, reintentos y semana con
+más de cuarenta entradas. UI validada con datos ficticios en servidor local: panel global,
+centro, lista, ficha, registro compartido y calendario semanal. La prueba local no se desplegó.
+Recursos medidos de la ampliación en reposo: app 17.75 MiB + AI 19.8 MiB, límites sin cambios.

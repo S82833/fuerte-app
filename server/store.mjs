@@ -1,5 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID, randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
+import {CLINIC_SCHEMA} from './clinics.mjs';
 
 export const digest = value => createHash('sha256').update(value).digest('hex');
 export function passwordHash(password, salt = randomBytes(16).toString('hex')) {
@@ -21,6 +22,7 @@ export function openStore(path) {
     CREATE INDEX IF NOT EXISTS messages_patient ON messages(patient_id,id);
     CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY AUTOINCREMENT,user_id TEXT,event TEXT NOT NULL,target TEXT,created TEXT NOT NULL);
   `);
+  db.exec(CLINIC_SCHEMA);
   return {
     db,
     audit(user, event, target = '') { db.prepare('INSERT INTO audit(user_id,event,target,created) VALUES(?,?,?,?)').run(user,event,target,new Date().toISOString()); },
@@ -32,8 +34,10 @@ export function openStore(path) {
       const total = db.prepare('SELECT COUNT(*) AS count FROM records WHERE patient_id=?').get(id).count;
       const summary = db.prepare('SELECT kind,COUNT(*) AS count,MIN(occurred) AS first,MAX(occurred) AS last FROM records WHERE patient_id=? GROUP BY kind').all(id);
       const messages = db.prepare('SELECT role,body FROM messages WHERE patient_id=? ORDER BY id DESC LIMIT 8').all(id).reverse();
+      const clinicalEvents=db.prepare('SELECT ce.kind,ce.body,ce.occurred FROM clinical_events ce JOIN enrollments e ON e.id=ce.enrollment_id WHERE e.patient_id=? ORDER BY ce.id DESC LIMIT 30').all(id);
+      const carePlan=db.prepare('SELECT status,next_followup FROM enrollments WHERE patient_id=?').get(id)||null;
       // Do not transmit account names, emails or identifiers to the model.
-      return { patient: { birthDate:patient.birth_date, prescribedTreatment:patient.treatment },records,totalRecords:total,summary,historyIsPartial:total>records.length,messages };
+      return { patient: { birthDate:patient.birth_date, prescribedTreatment:patient.treatment },records,totalRecords:total,summary,historyIsPartial:total>records.length,messages,clinicalEvents,carePlan };
     },
     session(user) {
       const token = randomBytes(32).toString('base64url');

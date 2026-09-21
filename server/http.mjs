@@ -2,6 +2,8 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, extname, sep } from 'node:path';
 import { openStore, passwordHash, passwordMatches, digest } from './store.mjs';
+import {clinicRoutes} from './clinics.mjs';
+import {patientWeek} from './week.mjs';
 
 class HttpError extends Error { constructor(status,message){super(message);this.status=status;} }
 const check=(condition,message,status=422)=>{if(!condition)throw new HttpError(status,message);};
@@ -57,14 +59,16 @@ export function createApp({dbPath,origin,staticRoot,askAI,aiStatus=async()=>fals
       const user=store.userFor(token);check(user,'Inicia sesión para continuar.',401);
       if(path==='/api/v1/me'&&method==='GET')return send(200,{user});
       if(path==='/api/v1/logout'&&method==='POST'){db.prepare('DELETE FROM sessions WHERE hash=?').run(digest(token));res.setHeader('Set-Cookie',cookie('',0));return send(200,{ok:true});}
+      if(await clinicRoutes({req,url,user,store,send,readJson,check,text,date}))return;
       if(path==='/api/v1/patients'&&method==='GET')return send(200,{items:db.prepare('SELECT id,name,birth_date,treatment,version FROM patients WHERE user_id=? ORDER BY rowid LIMIT 10').all(user.id)});
       if(path==='/api/v1/patients'&&method==='POST'){
         check(db.prepare('SELECT COUNT(*) AS n FROM patients WHERE user_id=?').get(user.id).n<10,'Límite de diez perfiles por cuenta.');
         const b=await readJson(req),id=store.newId(),birth=date(b.birthDate);check(birth<=new Date().toISOString().slice(0,10),'El nacimiento no puede estar en el futuro.');
         db.prepare('INSERT INTO patients(id,user_id,name,birth_date,treatment) VALUES(?,?,?,?,?)').run(id,user.id,text(b.name,80),birth,text(b.treatment||'',2000,false));store.audit(user.id,'patient.created',id);return send(201,store.patient(user.id,id));
       }
-      const match=path.match(/^\/api\/v1\/patients\/([^/]+)(?:\/(records|chat))?$/);check(match,'No encontrado.',404);
+      const match=path.match(/^\/api\/v1\/patients\/([^/]+)(?:\/(records|chat|week))?$/);check(match,'No encontrado.',404);
       const [,id,resource]=match,patient=store.patient(user.id,id);check(patient,'No encontrado.',404);
+      if(resource==='week'&&method==='GET')return send(200,{days:patientWeek(db,id)});
       if(!resource&&method==='PATCH'){
         const b=await readJson(req);check(b.version===patient.version,'El perfil cambió. Recarga e intenta nuevamente.',409);
         db.prepare('UPDATE patients SET treatment=?,version=version+1 WHERE id=? AND user_id=?').run(text(b.treatment,2000,false),id,user.id);store.audit(user.id,'treatment.recorded',id);return send(200,store.patient(user.id,id));

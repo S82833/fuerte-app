@@ -1,0 +1,9 @@
+FROM node:24-bookworm-slim
+ARG CODEX_VERSION=0.155.1
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN npm install --global @openai/codex@${CODEX_VERSION} && mkdir /workspace /auth && chown node:node /workspace /auth
+WORKDIR /app
+COPY server ./server
+USER node
+ENV CODEX_HOME=/auth HOME=/home/node
+CMD ["node","--max-old-space-size=64","server/ai.mjs"]

@@ -1,0 +1,8 @@
+FROM node:24-bookworm-slim
+WORKDIR /app
+COPY server ./server
+COPY --chown=node:node dist-product ./dist-product
+RUN mkdir /data && chown node:node /data
+USER node
+ENV NODE_ENV=production DATA_DIR=/data
+CMD ["node","--max-old-space-size=128","server/main.mjs"]

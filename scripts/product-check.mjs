@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
+import { mkdtempSync,rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import {createApp} from '../server/http.mjs';
+const temp=mkdtempSync(join(tmpdir(),'fuerte-test-')),origin='https://fuerte.test';let captured;
+const app=createApp({dbPath:join(temp,'test.sqlite'),origin,staticRoot:'dist-product',askAI:async payload=>{captured=payload;return 'Hay una dosis registrada el 2026-09-20.';},aiStatus:async()=>true});
+await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));
+const base=`http://127.0.0.1:${app.server.address().port}`;
+async function request(path,{body,method='POST',cookie,headers={}}={}){const response=await fetch(base+'/api/v1'+path,{method:body===undefined?'GET':method,headers:{Origin:origin,...(body===undefined?{}:{'Content-Type':'application/json'}),...(cookie?{Cookie:cookie}:{}),...headers},body:body===undefined?undefined:JSON.stringify(body)});return {status:response.status,data:await response.json(),cookie:response.headers.get('set-cookie')?.split(';')[0],headers:response.headers};}
+try{
+  assert.equal((await request('/patients')).status,401);
+  const password=randomBytes(24).toString('base64url');
+  const signup=email=>request('/signup',{body:{email,password,name:'Persona de prueba',consent:true}});
+  const a=await signup('a@example.test'),b=await signup('b@example.test');assert.equal(a.status,200);assert.equal(b.status,200);
+  assert.match(a.headers.get('set-cookie'),/HttpOnly; SameSite=Strict/);assert.match(a.headers.get('set-cookie'),/Secure/);
+  assert.equal((await request('/login',{body:{email:'a@example.test',password:'incorrecto'}})).status,401);
+  const login=await request('/login',{body:{email:'a@example.test',password}});assert.equal(login.status,200);assert.notEqual(login.cookie,a.cookie);
+  const p=await request('/patients',{cookie:a.cookie,body:{name:'Perfil A',birthDate:'2024-01-01',treatment:'Solo pauta registrada A'}});assert.equal(p.status,201);
+  const q=await request('/patients',{cookie:b.cookie,body:{name:'Perfil B secreto',birthDate:'2023-01-01',treatment:'Pauta privada B'}});assert.equal(q.status,201);
+  const path=`/patients/${p.data.id}`;
+  assert.equal((await request(path+'/records',{cookie:b.cookie})).status,404,'IDOR read must fail');
+  assert.equal((await request(path+'/records',{cookie:b.cookie,body:{kind:'note',occurred:'2026-09-20',body:'intrusion'},headers:{'Idempotency-Key':'intrusion'}})).status,404,'IDOR write must fail');
+  assert.equal((await request(path+'/chat',{cookie:b.cookie,body:{message:'ver historial',consent:true}})).status,404,'IDOR AI must fail');
+  assert.equal((await request(path+'/records',{cookie:a.cookie,body:{},headers:{Origin:'https://evil.test'}})).status,403,'CSRF must fail');
+  const dose={kind:'dose',occurred:'2026-09-20',body:'Pauta indicada por profesional'};
+  assert.equal((await request(path+'/records',{cookie:a.cookie,body:dose,headers:{'Idempotency-Key':'dose-1'}})).status,201);
+  assert.equal((await request(path+'/records',{cookie:a.cookie,body:dose,headers:{'Idempotency-Key':'dose-1'}})).status,200);
+  assert.equal((await request(path+'/records',{cookie:a.cookie,body:{...dose,body:'alterado'},headers:{'Idempotency-Key':'dose-1'}})).status,409);
+  assert.equal((await request(path+'/records',{cookie:a.cookie})).data.items.length,1,'Retry must not duplicate');
+  assert.equal((await request(path,{cookie:a.cookie,body:{version:0,treatment:'outdated'},method:'PATCH'})).status,409);
+  assert.equal((await request(path+'/chat',{cookie:a.cookie,body:{message:'mis dosis',consent:false}})).status,422);
+  assert.equal((await request(path+'/chat',{cookie:a.cookie,body:{message:'mis dosis',consent:true,patientId:q.data.id,context:{other:'do not use'}}})).status,200);
+  assert.equal(captured.context.patient.prescribedTreatment,'Solo pauta registrada A');
+  assert.equal(captured.context.totalRecords,1);assert.equal(captured.context.records[0].occurred,'2026-09-20');
+  assert.ok(!JSON.stringify(captured).includes('privada B'));assert.ok(!JSON.stringify(captured).includes('example.test'));assert.ok(!JSON.stringify(captured).includes('do not use'));
+  assert.equal((await request(path+'/chat',{cookie:a.cookie})).data.items.length,2);
+  for(let i=0;i<35;i++)app.store.db.prepare('INSERT INTO records(patient_id,kind,occurred,body,request_key,created) VALUES(?,?,?,?,?,?)').run(p.data.id,'note','2026-09-20','test',`seed-${i}`,new Date().toISOString());
+  const page=await request(path+'/records',{cookie:a.cookie});assert.equal(page.data.items.length,30);assert.ok(page.data.nextCursor);const next=await request(path+'/records?before='+page.data.nextCursor,{cookie:a.cookie});assert.equal(next.data.items.length,6);
+  await request('/logout',{cookie:a.cookie,body:{}});assert.equal((await request('/me',{cookie:a.cookie})).status,401);
+  console.log('PASS: authentication, isolation read/write/chat, CSRF, idempotency, concurrency, consent, context, pagination, logout');
+}finally{app.server.closeAllConnections();await new Promise(resolve=>app.server.close(resolve));app.store.db.close();rmSync(temp,{recursive:true,force:true});}

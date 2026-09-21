@@ -1,5 +1,33 @@
 # Fuerte en el VPS
 
+## Revisión de la interfaz del cuidador, 21/09/2026
+
+Las cinco mejoras de la tabla de IHC están conectadas a los datos reales:
+confirmación final de dosis con niño y fecha, botón visible y editor de pauta,
+identificación separada de cuidador y perfil infantil, consentimiento de IA en
+lenguaje claro y consulta del historial antes de abrir su formulario de captura.
+El historial permite filtrar los registros cargados y conserva la paginación.
+Las dificultades siguen disponibles desde Agregar registro; antes de registrar la
+dosis, Tuve una dificultad abre directamente ese tipo de registro.
+
+El estado de dosis consulta la semana completa para no depender de las primeras
+treinta entradas. Al cambiar de perfil se bloquea el contenido hasta cargar sus
+datos, se limpia el aviso anterior y se reinicia el consentimiento. La explicación
+incluye fecha de nacimiento, pauta, registros, resúmenes, conversación y seguimiento
+clínico, de acuerdo con el contexto que ya recibe el servicio de IA.
+
+Cambio de frontend, sin migraciones ni modificaciones al backend, al servicio de
+IA, al panel clínico o a la demo de GitHub Pages. Validación: TypeScript, Oxlint,
+build Vite, product-check y clinical-check; recorrido de navegador con base local
+en memoria para dosis, check semanal, pauta, registro, filtros y cambio de perfil.
+Las verificaciones funcionales no son sesiones académicas con participantes.
+
+El despliegue conserva una imagen `fuerte-app:before-caregiver-v3-*` y los estáticos
+anteriores en `.releases/caregiver-v3-*/dist-product`. Para revertir, etiquetar la
+imagen anterior como `fuerte-app:latest` y recrear únicamente `app` con
+`docker compose -f compose.product.yml up -d --no-deps --no-build app`.
+Nunca eliminar volúmenes para restaurar la interfaz.
+
 Primera versión funcional publicada el 21/09/2026 en https://fuerte.signalvise.com.
 La demo de GitHub Pages continúa independiente. El avance académico actual de IHC
 solo comprende introducción, objetivo y justificación.

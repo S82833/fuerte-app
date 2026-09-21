@@ -39,3 +39,6 @@ next-env.d.ts
 *.tsbuildinfo
 
 /dist-pages/
+/dist-product/
+/data/
+*.sqlite*

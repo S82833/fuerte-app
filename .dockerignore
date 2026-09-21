@@ -1,0 +1,5 @@
+*
+!server
+!server/**
+!dist-product
+!dist-product/**

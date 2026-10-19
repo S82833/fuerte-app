@@ -1,0 +1,155 @@
+/* Fuerte v4: capa de diseño de la guía de estilo IHC (base Material Design 3).
+   Tokens: 60 % crema, 30 % verde claro, 10 % verde de acento solo en la acción primaria.
+   Tipografía: Literata (títulos) y Nunito Sans (texto); escala 24/20/16/14/12; pesos 400/700; interlineado 1.5.
+   Espaciado: unidad de 8 px (medio paso de 4). Objetivos táctiles de 48 px.
+   Enfoque mobile first: barra inferior en móvil, barra lateral y dos columnas desde 960 px. */
+:root{
+  --f-primary:#3f6f4d;--f-primary-hover:#355e41;--f-on-primary:#fff;
+  --f-text:#2e3230;--f-text-2:#4f5a4b;--f-label:#3d5835;
+  --f-bg:#faf6f0;--f-surface:#fbf9f4;--f-surface-2:#eff1e7;--f-selected:#e0e8d8;--f-outline:#c9d3bf;
+  --f-warn-bg:#f6e7b5;--f-warn-text:#4a3a12;
+  --f-error-bg:#f8e8df;--f-error-text:#8a3d29;--f-ok-bg:#e0eddf;--f-ok-text:#2f5a3b;
+  --f-radius:16px;--f-radius-s:12px;--f-header:72px;
+}
+html{background:var(--f-bg)}
+body{color:var(--f-text);line-height:1.5}
+
+/* ---------- Tipografía ---------- */
+.app-shell h1,.app-shell .greeting h1,.app-shell .page-intro h1{font:700 24px/1.3 Literata,Georgia,serif;color:var(--f-text);margin:0}
+.app-shell h2,.app-shell h3,.app-shell .section-title h3,.app-shell .dose-card h2,.app-shell .dose-complete h2{font:700 20px/1.3 Literata,Georgia,serif;color:var(--f-text);margin:0}
+.app-shell p,.app-shell li,.app-shell select,.app-shell input,.app-shell textarea{font-size:16px;line-height:1.5}
+.app-shell .small-copy,.app-shell .treatment-note,.app-shell .history-hint,.app-shell .week-card summary,.app-shell .tip-card p,.app-shell .history-list p,.app-shell .error-box,.app-shell .success{font-size:14px;line-height:1.5}
+.app-shell .small-copy,.app-shell .treatment-note,.app-shell .history-hint{color:var(--f-text-2);font-weight:400;margin-top:8px}
+.app-shell .eyebrow,.app-shell .today-label,.app-shell .section-title>span,.app-shell .week-strip>div>span,.app-shell .history-list small,.app-shell .bubble small{font-size:12px;font-weight:700;letter-spacing:1px}
+.app-shell .eyebrow{color:var(--f-label);margin:0 0 8px}
+.app-shell .section-title>span,.app-shell .week-strip>div>span,.app-shell .history-list small{color:var(--f-text-2)}
+.app-shell .history-list h3{font:700 16px/1.5 'Nunito Sans',sans-serif}
+.app-shell .history-list p{color:var(--f-text-2)}
+
+/* ---------- Estructura móvil (base) ---------- */
+.app-shell{max-width:none;width:100%;margin:0;border-radius:0;box-shadow:none;background:var(--f-bg);min-height:100dvh}
+.app-header{height:var(--f-header);padding:8px 24px;padding-top:max(8px,env(safe-area-inset-top));border-radius:0;background:#faf6f0f2;border-bottom:1px solid var(--f-outline)}
+.brand{gap:8px}
+.brand strong{font:700 24px/1.2 Literata,Georgia,serif;color:var(--f-primary)}
+.brand span{font-size:12px;color:var(--f-text-2);margin-top:0;gap:4px}
+.app-main{padding:24px 24px 120px;gap:16px;max-width:640px;margin:0 auto;width:100%;box-sizing:border-box}
+.app-shell:not(.has-nav) .app-main{padding-bottom:48px}
+
+/* Barra inferior móvil */
+.bottom-nav{left:0;right:0;transform:none;max-width:none;width:auto;grid-template-columns:repeat(3,1fr);padding:8px 16px calc(8px + env(safe-area-inset-bottom));gap:8px;border-top:1px solid var(--f-outline)}
+.bottom-nav button{font-size:12px;font-weight:700;min-height:56px;padding:8px 4px;gap:4px;border-radius:var(--f-radius-s);color:var(--f-text-2)}
+.bottom-nav button[aria-current=page]{color:var(--f-label);background:var(--f-selected)}
+
+/* ---------- Superficies ---------- */
+.card,.dose-card,.dose-complete,.patient-context,.privacy-card{background:var(--f-surface);border:1px solid var(--f-outline);border-radius:var(--f-radius);padding:24px;box-shadow:none}
+.dose-complete{background:var(--f-ok-bg)}
+.caregiver-context{gap:8px}
+.caregiver-account{background:var(--f-surface-2);border-radius:var(--f-radius);padding:16px;gap:16px}
+.caregiver-account strong{font-size:16px;font-weight:700;margin-top:0}
+.patient-context{padding:16px;box-shadow:inset 4px 0 var(--f-primary)}
+.patient-context select{font-weight:700}
+.profile-picker{gap:8px}
+.tip-card{background:var(--f-surface-2);border-radius:var(--f-radius);padding:24px;gap:16px}
+.tip-card p{color:var(--f-text-2)}
+.today-label{background:var(--f-warn-bg);color:var(--f-warn-text);padding:4px 8px;border-radius:8px;margin-bottom:8px}
+.dose-card>p{color:var(--f-text-2);margin:8px 0 0;font-size:16px;line-height:1.5}
+.week-strip{gap:8px;margin-top:16px}
+.week-strip>div{gap:8px}
+.day{width:40px;height:40px;font-size:12px;color:var(--f-text-2);background:var(--f-surface-2)}
+.day.today{color:var(--f-text);outline:2px solid var(--f-primary)}
+.day.done{background:#c8e8d0;color:#2a5634}
+.error-box{background:var(--f-error-bg);color:var(--f-error-text);border-radius:var(--f-radius-s);padding:16px}
+.success{background:var(--f-ok-bg)!important;color:var(--f-ok-text)!important;padding:16px!important;margin:0!important}
+
+/* ---------- Componentes: un patrón por tipo ---------- */
+.app-shell .action{min-height:48px;border-radius:var(--f-radius-s);font:700 16px/1.5 'Nunito Sans',sans-serif;padding:0 16px;gap:8px;margin-top:16px;box-shadow:none;width:100%}
+.app-shell .action.primary{background:var(--f-primary);color:var(--f-on-primary);border:2px solid var(--f-primary)}
+.app-shell .action.primary:hover:not(:disabled){background:var(--f-primary-hover);border-color:var(--f-primary-hover)}
+.app-shell .action.secondary{background:transparent;color:var(--f-primary);border:2px solid var(--f-primary)}
+.app-shell .action.secondary:hover:not(:disabled){background:var(--f-surface-2)}
+.app-shell .action:disabled{opacity:.6;cursor:not-allowed}
+.app-shell .compact-action{width:auto;margin-top:0}
+.app-shell .text-button{color:var(--f-primary);font:700 16px/1.5 'Nunito Sans',sans-serif;text-decoration:underline;text-underline-offset:4px;min-height:48px;padding:8px 0;background:transparent}
+.app-shell .week-link{margin-top:8px}
+.app-shell .icon-button{width:48px;height:48px;border-radius:var(--f-radius-s);border:2px solid var(--f-outline);background:transparent;color:var(--f-primary);margin-left:0}
+.app-shell .icon-button:hover:not(:disabled){background:var(--f-surface-2)}
+.app-shell :is(.action,.text-button,.icon-button,.chip,.bottom-nav button,.history-filters button):focus-visible{outline:3px solid #1f4f2e;outline-offset:2px}
+.product-form{gap:16px;margin-top:16px}
+.product-form label{font-size:14px;font-weight:700;gap:8px}
+.product-form input:not([type=checkbox]),.product-form textarea,.product-form select,.profile-picker select{border:1px solid var(--f-outline);border-radius:var(--f-radius-s);background:#fff;min-height:48px;padding:12px 16px;box-sizing:border-box}
+.product-form :is(input,textarea,select):focus{outline:2px solid var(--f-primary);outline-offset:0;border-color:var(--f-primary)}
+.history-filters{display:flex;flex-wrap:wrap;gap:8px;border:0;padding:0;margin:16px 0}
+.history-filters button{min-height:40px;padding:8px 16px;border-radius:999px;border:1px solid var(--f-outline);background:transparent;color:var(--f-text-2);font:700 14px/1.5 'Nunito Sans',sans-serif}
+.history-filters button[aria-pressed=true]{background:var(--f-selected);border-color:var(--f-primary);color:var(--f-label)}
+.history-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.history-list article{padding:16px 0;gap:16px;border-bottom:1px solid var(--f-outline)}
+
+/* ---------- Acceso (login y registro) ---------- */
+.auth-layout{display:flex;flex-direction:column;gap:24px}
+.auth-layout .welcome-art{height:176px;border-radius:var(--f-radius)}
+.auth-layout .page-intro>p:last-child{color:var(--f-text-2);font-size:16px;margin-top:8px}
+.auth-form{display:flex;flex-direction:column;gap:8px}
+.auth-form .product-form{margin-top:0}
+
+/* ---------- Inicio ---------- */
+.home-grid,.home-primary,.home-secondary{display:flex;flex-direction:column;gap:16px}
+
+/* ---------- Acompañamiento (chat con IA) ---------- */
+.chat-layout{display:flex;flex-direction:column;gap:16px}
+.chat-aside{display:flex;flex-direction:column;gap:16px;order:-1}
+.chat-panel{display:flex;flex-direction:column;gap:16px;background:var(--f-surface);border:1px solid var(--f-outline);border-radius:var(--f-radius);padding:16px}
+.chat-status{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--f-text-2)}
+.chat-status .dot{width:8px;height:8px;border-radius:50%;background:#a0a596}
+.chat-status .dot.on{background:var(--f-primary)}
+.chat-history{display:flex;flex-direction:column;gap:12px;min-height:160px}
+.chat-empty{padding:24px 8px;color:var(--f-text-2)}
+.chat-empty svg{margin:0 auto 8px;color:var(--f-primary)}
+.bubble{background:#fff;border:1px solid var(--f-outline);border-radius:var(--f-radius);padding:12px 16px;font-size:16px;max-width:88%}
+.bubble.user{background:var(--f-selected);border-color:var(--f-selected);align-self:flex-end}
+.bubble small{color:var(--f-label)}
+.bubble p{margin-top:4px}
+.bubble.pending p{color:var(--f-text-2);font-style:italic}
+.chat-suggestions{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{flex:0 0 auto;min-height:40px;padding:8px 16px;border-radius:999px;border:1px solid var(--f-outline);background:#fff;color:var(--f-label);font:700 14px/1.5 'Nunito Sans',sans-serif;cursor:pointer}
+.chip:disabled{opacity:.6;cursor:not-allowed}
+.chat-composer{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:0}
+.chat-composer textarea{min-height:56px!important;max-height:160px;resize:vertical}
+.chat-composer .action{width:auto;margin-top:0;min-height:56px}
+.privacy-card{display:flex;flex-direction:column;gap:8px}
+.privacy-card p,.privacy-card li{font-size:14px;color:var(--f-text-2)}
+.privacy-data{display:flex;flex-direction:column;gap:8px;padding:0;margin:0;list-style:none}
+.privacy-data li{display:flex;gap:8px}
+.privacy-check{display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:var(--f-radius-s);background:var(--f-surface-2);font-size:14px;font-weight:700}
+.privacy-check input{width:20px;height:20px;accent-color:var(--f-primary);margin-top:2px}
+
+@media (max-width:359px){.app-main{padding-left:16px;padding-right:16px}.card,.dose-card{padding:16px}.day{width:32px;height:32px}.chat-composer{grid-template-columns:1fr}.chat-composer .action{width:100%}}
+
+/* ---------- Tableta ---------- */
+@media (min-width:600px) and (max-width:959px){
+  .app-shell{margin:0;border-radius:0;min-height:100dvh}
+  .app-header{border-radius:0}
+  .bottom-nav{padding-left:calc(50% - 320px);padding-right:calc(50% - 320px)}
+}
+
+/* ---------- Web (escritorio) ---------- */
+@media (min-width:960px){
+  .app-shell.has-nav{display:grid;grid-template-columns:256px minmax(0,1fr);grid-template-rows:var(--f-header) 1fr;grid-template-areas:"header header" "nav main"}
+  .app-header{grid-area:header;padding:0 32px;height:var(--f-header)}
+  .app-main{grid-area:main;max-width:1120px;padding:32px 40px 48px;gap:24px}
+  .app-shell:not(.has-nav) .app-main{padding-top:48px}
+  .bottom-nav{grid-area:nav;position:sticky;top:var(--f-header);bottom:auto;left:auto;right:auto;height:calc(100dvh - var(--f-header));display:flex;flex-direction:column;gap:8px;padding:24px 16px;border-top:0;border-right:1px solid var(--f-outline);background:var(--f-surface-2);backdrop-filter:none}
+  .bottom-nav button{flex-direction:row;justify-content:flex-start;gap:16px;font-size:16px;min-height:48px;padding:12px 16px;text-align:left}
+  .caregiver-context{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);align-items:stretch}
+  .caregiver-account{align-self:stretch}
+  .home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:start}
+  .dose-card .action,.dose-complete .action{max-width:400px}
+  .history-overview,.record-editor{max-width:800px}
+  .chat-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:24px;align-items:start}
+  .chat-aside{order:0;position:sticky;top:calc(var(--f-header) + 32px)}
+  .chat-panel{padding:24px;min-height:calc(100dvh - var(--f-header) - 220px)}
+  .chat-history{flex:1}
+  .auth-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:48px;row-gap:24px;align-items:start}
+  .auth-layout .welcome-art{grid-row:1 / span 2;height:100%;min-height:480px}
+  .auth-layout .welcome-art img{object-position:center}
+}
+.chat-status{display:flex}

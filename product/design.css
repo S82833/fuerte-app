@@ -153,3 +153,38 @@ body{color:var(--f-text);line-height:1.5}
   .auth-layout .welcome-art img{object-position:center}
 }
 .chat-status{display:flex}
+
+/* ===== v5: correcciones del testeo responsive (IHC, 26/10/2026) ===== */
+/* R1. Celular horizontal: la cabecera deja de ser fija y la barra inferior se compacta (antes ocupaban 42 % de la altura). */
+@media (max-height:500px) and (max-width:959px){
+  .app-header{position:static}
+  .bottom-nav{padding-top:4px;padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+  .bottom-nav button{min-height:40px;flex-direction:row;gap:8px;padding:4px 8px}
+}
+/* R2. Pantallas angostas: la tarjeta de cuenta y el selector del niño ocupan menos, para que la acción principal suba. */
+@media (max-width:599px){
+  .caregiver-account{padding:8px 12px;gap:12px}
+  .caregiver-account .eyebrow{display:none}
+  .patient-context{padding:12px}
+  .patient-context .small-copy{font-size:12px;margin-top:4px}
+  .app-main{gap:12px}
+  .dose-card,.dose-complete{padding:16px}
+  .caregiver-account .account-mark{display:none}
+  .app-shell .greeting h1{font-size:22px;line-height:1.25}
+  .app-main{padding-top:16px}
+}
+/* R3. Preguntas sugeridas del chat: se acomodan en varias líneas en vez de salirse de la pantalla. */
+.chat-suggestions{flex-wrap:wrap;overflow-x:visible}
+.chat-suggestions .chip{white-space:normal;text-align:left}
+/* R4. Chat en móvil: una vez autorizado el asistente, la conversación va primero y la explicación de privacidad después. */
+@media (max-width:959px){
+  .chat-layout:has(.privacy-card input:checked) .chat-aside{order:1}
+}
+/* R5. 320 px: el título «Sus registros» y el botón «Agregar registro» ya no se amontonan. */
+@media (max-width:380px){
+  .history-toolbar{flex-wrap:wrap;gap:12px}
+  .history-toolbar>.action{width:100%;justify-content:center}
+  .patient-context .small-copy{display:none}
+}
+/* R6. Cuadro de mensaje del chat: alto suficiente para leer el texto de ayuda completo en celulares. */
+@media (max-width:599px){.app-shell .chat-composer textarea{min-height:104px;height:104px}}

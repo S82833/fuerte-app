@@ -1,8 +1,9 @@
 # Fuerte en el VPS
 
-## PWA preparada localmente, 09/11/2026
+## PWA publicada, 09/11/2026
 
-Rama `codex/fuerte-pwa`. Pendiente de autorización y publicación en el VPS.
+Publicada con autorización explícita de Simon en https://fuerte.signalvise.com.
+Rama `codex/fuerte-pwa`, cambio funcional `50e509c`, PR 5.
 El producto incluye manifiesto propio, iconos de 192 y 512 px, icono adaptable,
 icono Apple y apertura independiente del navegador. Chrome ofrece el botón
 «Instalar Fuerte» cuando el navegador habilita la instalación; las instrucciones
@@ -24,6 +25,13 @@ de navegador aislada comprobó cero errores de instalabilidad Chrome, ausencia
 de datos privados en caché, fallback offline, controles de instalación y ciclo
 de actualización con conservación de un formulario abierto. No sustituye una
 prueba física de instalación en iPhone y Android.
+
+Verificación pública posterior: HTTPS, manifiesto y MIME, worker idéntico al
+paquete, icono, acceso del cuidador con sus perfiles conservados, cierre de sesión,
+cero errores de instalabilidad Chrome y pantalla offline. El servicio app quedó
+healthy y mantuvo el volumen `fuerte_fuerte_data`. Respaldo de archivos e imagen
+anterior en `.releases/pwa-20261109T203928Z` e imagen
+`fuerte-app:before-pwa-20261109T203928Z`.
 
 Esta ampliación no implementa suscripciones push ni recordatorios programados.
 Tampoco renueva la autenticación de Codex del chat, diagnosticada por separado.

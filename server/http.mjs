@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 import { openStore, passwordHash, passwordMatches, digest } from './store.mjs';
 import {clinicRoutes} from './clinics.mjs';
@@ -9,6 +10,15 @@ class HttpError extends Error { constructor(status,message){super(message);this.
 const check=(condition,message,status=422)=>{if(!condition)throw new HttpError(status,message);};
 const text=(value,max,required=true)=>{check(typeof value==='string' && value.trim().length<=max && (!required||value.trim().length>0),'Revisa los campos del formulario.');return value.trim();};
 const date=value=>{check(typeof value==='string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0,10)===value && value<='2100-01-01','La fecha no es válida.');return value;};
+export function parseByteRange(value,size){
+  if(value===undefined)return undefined;
+  const match=typeof value==='string'&&/^bytes=(\d*)-(\d*)$/.exec(value);
+  if(!match||!size||(!match[1]&&!match[2]))return null;
+  let start,end;
+  if(!match[1]){const suffix=Number(match[2]);if(!Number.isSafeInteger(suffix)||suffix<=0)return null;start=Math.max(0,size-suffix);end=size-1;}
+  else{start=Number(match[1]);end=match[2]?Number(match[2]):size-1;if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start<0||start>=size||end<start)return null;end=Math.min(end,size-1);}
+  return {start,end};
+}
 export async function readJson(req,max=16384){let raw='';for await(const chunk of req){raw+=chunk;check(Buffer.byteLength(raw)<=max,'Solicitud demasiado grande.',413);}try{return JSON.parse(raw);}catch{throw new HttpError(400,'JSON inválido.');}}
 export function createApp({dbPath,origin,staticRoot,askAI,aiStatus=async()=>false,secureCookie=true,registration=true}){
   const store=openStore(dbPath),db=store.db,limits=new Map();let authBusy=false;
@@ -23,13 +33,28 @@ export function createApp({dbPath,origin,staticRoot,askAI,aiStatus=async()=>fals
       if(path==='/healthz'&&method==='GET')return send(200,{ok:true});
       if(!path.startsWith('/api/')){
         check(method==='GET'||method==='HEAD','Método no permitido.',405);
-        const root=resolve(staticRoot),file=resolve(root,'.'+decodeURIComponent(path==='/'?'/product.html':path));
+        const legal={'/terminos':'/terminos/index.html','/terminos/':'/terminos/index.html','/privacidad':'/privacidad/index.html','/privacidad/':'/privacidad/index.html'};
+        const document=path==='/'?'/landing.html':['/login','/login/','/app','/app/'].includes(path)?'/product.html':Object.hasOwn(legal,path)?legal[path]:path;
+        const root=resolve(staticRoot),file=resolve(root,'.'+decodeURIComponent(document));
         check(file.startsWith(root+sep),'No encontrado.',404);
-        let bytes;try{bytes=await readFile(file);}catch{throw new HttpError(404,'No encontrado.');}
         if(path==='/fuerte-sw.js'||['.html','.webmanifest'].includes(extname(file)))res.setHeader('Cache-Control','no-cache');
         else if(/^\/assets\/[^/]+-[A-Za-z\d_-]{8,}\.(js|css)$/.test(path))res.setHeader('Cache-Control','public, max-age=31536000, immutable');
         else res.setHeader('Cache-Control','public, max-age=3600');
-        const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.webmanifest':'application/manifest+json; charset=utf-8'};
+        const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.webmanifest':'application/manifest+json; charset=utf-8','.mp4':'video/mp4','.webm':'video/webm','.vtt':'text/vtt; charset=utf-8'};
+        if(['.mp4','.webm'].includes(extname(file))){
+          let info;try{info=await stat(file);}catch{throw new HttpError(404,'No encontrado.');}
+          check(info.isFile(),'No encontrado.',404);
+          const range=method==='HEAD'?undefined:parseByteRange(req.headers.range,info.size);
+          res.setHeader('Accept-Ranges','bytes');
+          if(range===null){res.writeHead(416,{'Content-Range':`bytes */${info.size}`});return res.end();}
+          const length=range?range.end-range.start+1:info.size;
+          res.setHeader('Content-Type',mime[extname(file)]);res.setHeader('Content-Length',String(length));
+          if(range)res.setHeader('Content-Range',`bytes ${range.start}-${range.end}/${info.size}`);
+          res.writeHead(range?206:200);
+          if(method==='HEAD'||!info.size)return res.end();
+          const stream=createReadStream(file,range||{});stream.once('error',()=>res.destroy());res.once('close',()=>stream.destroy());return stream.pipe(res);
+        }
+        let bytes;try{bytes=await readFile(file);}catch{throw new HttpError(404,'No encontrado.');}
         res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream'});return res.end(method==='HEAD'?undefined:bytes);
       }
       limit(req.socket.remoteAddress,180);

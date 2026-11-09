@@ -1,0 +1,23 @@
+Conoce Fuerte
+Este es un recorrido de Fuerte para cuidadores. Usaremos datos ficticios para conocer el registro de dosis, el historial y el acompañamiento, desde la vista del celular.
+
+Crea un perfil
+En el selector puedes elegir al niño que acompañas. El botón más permite crear otro perfil. Escribe su nombre, fecha de nacimiento y guarda. Cada niño mantiene sus registros separados.
+
+Registra las indicaciones
+En La pauta que registraste, copia las indicaciones entregadas por el profesional y guárdalas. Fuerte no calcula dosis ni modifica el tratamiento. Aquí mostramos únicamente un texto de ejemplo.
+
+Confirma la dosis
+Después de administrar la dosis indicada, toca Ya recibió su dosis. La confirmación indica que el registro quedó guardado. La vista semanal muestra un check en el día correspondiente.
+
+Consulta el historial
+En Historial puedes consultar los registros y filtrarlos por dosis, apuntes, controles o dificultades. El botón para ver registros anteriores carga más entradas cuando las necesitas.
+
+Anota una dificultad
+Para anotar lo ocurrido, toca Agregar registro. Elige Una dificultad con la dosis, revisa la fecha y escribe el detalle. Al guardar, puedes encontrarlo con el filtro Dificultades. También puedes registrar apuntes y controles.
+
+Revisa el acompañamiento
+Acompañamiento requiere tu autorización para enviar el contexto al proveedor de inteligencia artificial. En esta versión el chat está temporalmente sin conexión. Puedes seguir guardando tus registros. El asistente no reemplaza al profesional de salud.
+
+Cambia de perfil e instala
+Al cambiar de niño, comprueba que estás en su perfil antes de registrar. Para abrir Fuerte como una app, añádela a la pantalla de inicio desde el menú del navegador.

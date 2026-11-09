@@ -207,3 +207,39 @@ consentimiento, denegación entre centros, permisos, revocación, reintentos y s
 más de cuarenta entradas. UI validada con datos ficticios en servidor local: panel global,
 centro, lista, ficha, registro compartido y calendario semanal. La prueba local no se desplegó.
 Recursos medidos de la ampliación en reposo: app 17.75 MiB + AI 19.8 MiB, límites sin cambios.
+
+## Landing, tutoriales y páginas legales, 09/11/2026
+
+La raíz `/` sirve la landing pública; `/login` abre el acceso y `/app` la aplicación.
+La sesión actualiza la ruta entre `/login` y `/app` sin cargar otro perfil. Los accesos
+antiguos de una PWA instalada que abrían `/` se envían a `/app`. Se conserva el `id: /`
+y el alcance del manifiesto; su inicio y el botón offline apuntan a `/app`.
+Las versiones académicas `/landing/v1/` y `/landing/v2/` se conservan.
+
+La landing incluye ocho FAQ y cuatro grabaciones reales de la vista del cuidador:
+recorrido completo 100.288 s, primeros pasos 36.261 s, dosis e historial 38.661 s y
+acompañamiento 25.429 s. Video vertical 720 × 1558, H264/AAC, voz femenina Microsoft
+`es-PE-CamilaNeural`, subtítulos WebVTT, carteles y transcripción. Los datos son
+ficticios y la contraseña se introdujo fuera de la grabación. No se graba una respuesta
+inventada de IA: el video y el FAQ explican que el chat está sin conexión. Tampoco se
+prometen recordatorios push. La reproducción no es automática y usa `preload=none`.
+
+Los MP4 se transmiten con streams y solicitudes de bytes: 206, Content-Range, HEAD,
+416 para rangos inválidos y cierre al desconectarse. No se carga el archivo completo
+en memoria por solicitud. Las respuestas de la API siguen siendo privadas y no-store.
+
+`/terminos` y `/privacidad` son documentos públicos en español, enlazados desde la
+landing, acceso, registro y vista del cuidador. Describen las funciones y límites
+reales del prototipo, autorización separada de IA, contexto enviado, vinculación con
+centros, cookies, conservación y ausencia de exportación/borrado autónomo. Simon indicó
+que todo es de prueba y que no se publique su nombre: responsable presentado como equipo
+del proyecto y correo reservado `privacidad@fuerte.example`, expresamente sin recepción.
+No presentar esos documentos como condiciones completas para operación con pacientes reales.
+Referencias oficiales: Ley 29733 y DS 016-2024-JUS en Congreso y ANPD.
+
+Validación local: build de producto, TypeScript, Oxlint, product-check; test:landing
+5/5 RED con mutaciones y GREEN; test:pwa 5/5 RED y GREEN. Navegador con base aislada:
+10 comprobaciones, video con reproducción y búsqueda, subtítulos, cuatro anchos sin
+horizontal, FAQ por teclado, documentos legales móviles, sesión y cierre, compatibilidad
+con inicio anterior de PWA y Chrome CDP sin errores de instalación. No instalación física
+en Android/iPhone. Revisión independiente de rutas/streaming/PWA sin hallazgos P1/P2.

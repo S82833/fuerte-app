@@ -10,6 +10,7 @@
     "build": "vinext build",
     "build:product": "vite build --config vite.product.config.ts",
     "test:pwa": "node scripts/product-pwa-check.mjs",
+    "test:landing": "node scripts/landing-check.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint app lib scripts",
     "format": "oxfmt",

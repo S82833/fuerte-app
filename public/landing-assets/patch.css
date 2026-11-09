@@ -1,0 +1,7 @@
+/* Correcciones posteriores a la primera medición WAVE. Solo se aplican a V2. */
+.step .number{color:#4a7c59}
+.week-row{gap:2px}
+.week-row span{font-size:.875rem}
+.week-row b{width:clamp(25px,6vw,30px);height:30px;font-size:.875rem}
+
+.contact-form{flex-wrap:wrap;gap:12px}.contact-form label{flex-basis:100%;text-align:left;font-weight:700}

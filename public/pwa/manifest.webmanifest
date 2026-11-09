@@ -4,7 +4,7 @@
   "short_name": "Fuerte",
   "description": "Seguimiento del tratamiento de la anemia infantil y acompañamiento a cuidadores.",
   "lang": "es-PE",
-  "start_url": "/",
+  "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "background_color": "#faf6f0",

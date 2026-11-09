@@ -21,7 +21,7 @@ async function gate(name,mutated,original){
 }
 
 function installable(m){
-  assert.equal(m.name,'Fuerte');assert.equal(m.id,'/');assert.equal(m.scope,'/');assert.equal(m.start_url,'/');
+  assert.equal(m.name,'Fuerte');assert.equal(m.id,'/');assert.equal(m.scope,'/');assert.equal(m.start_url,'/app');
   assert.equal(m.display,'standalone');assert.equal(m.prefer_related_applications,false);
   for(const size of [192,512]){
     const icon=m.icons.find(i=>i.sizes===`${size}x${size}`&&i.purpose==='any');assert.ok(icon,`Missing icon ${size}`);

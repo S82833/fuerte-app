@@ -16,7 +16,7 @@ export function createApp({dbPath,origin,staticRoot,askAI,aiStatus=async()=>fals
   const cookie=(token,age=604800)=>`fuerte_session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secureCookie?'; Secure':''}`;
   const server=createServer(async(req,res)=>{
     res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
-    res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+    res.setHeader('Content-Security-Policy',"default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; worker-src 'self'; manifest-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     const send=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data));};
     try{
       const url=new URL(req.url,'http://localhost'),path=url.pathname,method=req.method;
@@ -26,7 +26,10 @@ export function createApp({dbPath,origin,staticRoot,askAI,aiStatus=async()=>fals
         const root=resolve(staticRoot),file=resolve(root,'.'+decodeURIComponent(path==='/'?'/product.html':path));
         check(file.startsWith(root+sep),'No encontrado.',404);
         let bytes;try{bytes=await readFile(file);}catch{throw new HttpError(404,'No encontrado.');}
-        const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2'};
+        if(path==='/fuerte-sw.js'||['.html','.webmanifest'].includes(extname(file)))res.setHeader('Cache-Control','no-cache');
+        else if(/^\/assets\/[^/]+-[A-Za-z\d_-]{8,}\.(js|css)$/.test(path))res.setHeader('Cache-Control','public, max-age=31536000, immutable');
+        else res.setHeader('Cache-Control','public, max-age=3600');
+        const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.webmanifest':'application/manifest+json; charset=utf-8'};
         res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream'});return res.end(method==='HEAD'?undefined:bytes);
       }
       limit(req.socket.remoteAddress,180);

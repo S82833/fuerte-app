@@ -1,5 +1,8 @@
 # Fuerte
 
+La versión funcional con cuentas, perfiles y servidor está documentada en
+[`PRODUCT.md`](PRODUCT.md). Este README describe la demo estática independiente.
+
 Demo web móvil basada en las cinco pantallas y la guía Terra del archivo Stitch. React + TypeScript, con Vinext/Vite y componentes accesibles de Base UI.
 
 ## GitHub Pages

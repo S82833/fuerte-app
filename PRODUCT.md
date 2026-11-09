@@ -256,3 +256,21 @@ Se grabó únicamente el tramo 06 de acompañamiento con la respuesta real. Los 
 Recorrido nuevo 103.146 s (1:43), acompañamiento 28.288 s, voz Microsoft Camila y subtítulos
 sincronizados. Se actualizaron transcripción y póster. Las URLs modificadas usan
 ?v=chat-20261109 para evitar mostrar el video anterior desde el caché del visitante.
+
+## Soporte al usuario para S13, 09/11/2026
+
+Simon solicitó una demostración académica con datos ficticios y apariencia realista.
+Se añadieron /ayuda.html, /foro.html y /reclamaciones.html, enlazadas desde la landing
+y la vista del cuidador. Ocho guías buscables con categorías y lectura desplegable;
+foro con cinco temas, respuestas, nueva publicación y persistencia en este navegador;
+libro con formulario, folio, confirmación y consulta de seguimiento, además de dos
+casos de ejemplo FUE-DEMO-001 y FUE-DEMO-002.
+
+Los registros del soporte usan exclusivamente localStorage en la clave
+fuerte-soporte-demo. No se envían a un servidor ni hay recepción oficial de reclamos.
+El alcance de demostración y los datos ficticios se explican en las interfaces.
+No se modificó SQLite, el backend, la autenticación ni el servicio de IA.
+
+Recorrido de navegador: ocho guías y búsqueda/estado vacío; cinco temas, publicación
+y respuesta conservadas tras recargar; formulario de reclamación y folio consultable
+tras recargar; tres páginas sin desbordamiento a 390 px y sin errores de consola.

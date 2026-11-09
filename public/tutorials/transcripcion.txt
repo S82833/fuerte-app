@@ -17,7 +17,7 @@ Anota una dificultad
 Para anotar lo ocurrido, toca Agregar registro. Elige Una dificultad con la dosis, revisa la fecha y escribe el detalle. Al guardar, puedes encontrarlo con el filtro Dificultades. También puedes registrar apuntes y controles.
 
 Revisa el acompañamiento
-Acompañamiento requiere tu autorización para enviar el contexto al proveedor de inteligencia artificial. En esta versión el chat está temporalmente sin conexión. Puedes seguir guardando tus registros. El asistente no reemplaza al profesional de salud.
+En Acompañamiento, autoriza el envío de contexto al proveedor de inteligencia artificial. Escribe una pregunta sobre los registros de este perfil. El asistente consulta las dosis y dificultades anotadas y responde con sus fechas. Puede equivocarse y no reemplaza al profesional de salud.
 
 Cambia de perfil e instala
 Al cambiar de niño, comprueba que estás en su perfil antes de registrar. Para abrir Fuerte como una app, añádela a la pantalla de inicio desde el menú del navegador.

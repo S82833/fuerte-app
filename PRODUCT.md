@@ -243,3 +243,16 @@ Validación local: build de producto, TypeScript, Oxlint, product-check; test:la
 horizontal, FAQ por teclado, documentos legales móviles, sesión y cierre, compatibilidad
 con inicio anterior de PWA y Chrome CDP sin errores de instalación. No instalación física
 en Android/iPhone. Revisión independiente de rutas/streaming/PWA sin hallazgos P1/P2.
+
+## Recuperación del chat y actualización puntual de videos, 09/11/2026
+
+Autenticación ChatGPT de Codex renovada mediante device code oficial en el contenedor AI.
+Se comprobó una respuesta real con datos ficticios, HTTP 200, y health authenticated=true.
+Otra consulta desde la interfaz móvil del cuidador verificó las dosis y dificultades del
+perfil ficticio usado en el tutorial. No se modificó ni se reinició el servicio AI.
+
+Se grabó únicamente el tramo 06 de acompañamiento con la respuesta real. Los segmentos
+00 a 05 y 07 conservaron sus SHA256, al igual que los cortos primeros-pasos y dosis-e-historial.
+Recorrido nuevo 103.146 s (1:43), acompañamiento 28.288 s, voz Microsoft Camila y subtítulos
+sincronizados. Se actualizaron transcripción y póster. Las URLs modificadas usan
+?v=chat-20261109 para evitar mostrar el video anterior desde el caché del visitante.

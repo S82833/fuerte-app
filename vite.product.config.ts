@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/postcss';
-export default defineConfig({plugins:[react()],css:{postcss:{plugins:[tailwindcss()]}},build:{outDir:'dist-product',rollupOptions:{input:'product.html'}}});
+import {finalizeProductPwa} from './scripts/product-pwa.mjs';
+export default defineConfig({plugins:[react(),{name:'fuerte-product-pwa',closeBundle(){finalizeProductPwa('dist-product');}}],css:{postcss:{plugins:[tailwindcss()]}},build:{outDir:'dist-product',rolldownOptions:{input:'product.html'}}});

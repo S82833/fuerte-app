@@ -1,5 +1,33 @@
 # Fuerte en el VPS
 
+## PWA preparada localmente, 09/11/2026
+
+Rama `codex/fuerte-pwa`. Pendiente de autorización y publicación en el VPS.
+El producto incluye manifiesto propio, iconos de 192 y 512 px, icono adaptable,
+icono Apple y apertura independiente del navegador. Chrome ofrece el botón
+«Instalar Fuerte» cuando el navegador habilita la instalación; las instrucciones
+para iPhone indican Safari, Compartir y Añadir a pantalla de inicio. La misma
+versión sirve ambos dispositivos. El aviso se oculta cuando ya está instalada.
+
+El worker `/fuerte-sw.js` guarda únicamente recursos públicos enumerados por el
+build. No intercepta API, mutaciones ni otros orígenes. Al abrir sin conexión
+muestra una pantalla pública de ayuda; no ofrece historial privado ni guardado
+offline. La actualización espera el cierre de pestañas y no recarga formularios.
+Los recursos con nombre hash tienen caché HTTP; HTML, manifiesto y worker se
+revalidan y la API mantiene `no-store`. El logo del producto pasa de 688220 a
+5960 bytes, conservando el original de la demo.
+
+Comandos: `npm run build:product`, después `npm run test:pwa` y
+`node scripts/product-check.mjs`. Las cinco verificaciones de PWA comprueban
+primero una mutación que debe fallar y después el código original. La prueba
+de navegador aislada comprobó cero errores de instalabilidad Chrome, ausencia
+de datos privados en caché, fallback offline, controles de instalación y ciclo
+de actualización con conservación de un formulario abierto. No sustituye una
+prueba física de instalación en iPhone y Android.
+
+Esta ampliación no implementa suscripciones push ni recordatorios programados.
+Tampoco renueva la autenticación de Codex del chat, diagnosticada por separado.
+
 ## Revisión de la interfaz del cuidador, 21/09/2026
 
 Las cinco mejoras de la tabla de IHC están conectadas a los datos reales:

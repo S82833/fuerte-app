@@ -277,4 +277,4 @@ tras recargar; tres páginas sin desbordamiento a 390 px y sin errores de consol
 
 ## Libro de reclamaciones y tutorial del cuidador, 11/11/2026
 
-Implementación local en `codex/fuerte-reclamos-recorrido`, pendiente de autorización de despliegue. Fuentes, alcance de demostración y pruebas en [docs/reclamos-recorrido.md](docs/reclamos-recorrido.md). Tutorial repetible con Ver tutorial o `/app?tour=1`. Sin cambios de esquema, backend, autenticación de IA ni servicios del VPS.
+Publicado con autorización explícita de Simon en https://fuerte.signalvise.com, commit funcional `739fc80`, rama `codex/fuerte-reclamos-recorrido`, PR 9. Fuentes, alcance de demostración y pruebas en [docs/reclamos-recorrido.md](docs/reclamos-recorrido.md). Tutorial repetible con Ver tutorial o `/app?tour=1`. Publicación limitada a los estáticos y recreación del servicio app. Sin cambios de esquema, backend ni autenticación de IA. Se conservaron el volumen de datos y los demás contenedores.

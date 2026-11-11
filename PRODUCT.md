@@ -274,3 +274,7 @@ No se modificó SQLite, el backend, la autenticación ni el servicio de IA.
 Recorrido de navegador: ocho guías y búsqueda/estado vacío; cinco temas, publicación
 y respuesta conservadas tras recargar; formulario de reclamación y folio consultable
 tras recargar; tres páginas sin desbordamiento a 390 px y sin errores de consola.
+
+## Libro de reclamaciones y tutorial del cuidador, 11/11/2026
+
+Publicado con autorización explícita de Simon en https://fuerte.signalvise.com, commit funcional `739fc80`, rama `codex/fuerte-reclamos-recorrido`, PR 9. Fuentes, alcance de demostración y pruebas en [docs/reclamos-recorrido.md](docs/reclamos-recorrido.md). Tutorial repetible con Ver tutorial o `/app?tour=1`. Publicación limitada a los estáticos y recreación del servicio app. Sin cambios de esquema, backend ni autenticación de IA. Se conservaron el volumen de datos y los demás contenedores.

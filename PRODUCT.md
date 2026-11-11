@@ -274,3 +274,7 @@ No se modificó SQLite, el backend, la autenticación ni el servicio de IA.
 Recorrido de navegador: ocho guías y búsqueda/estado vacío; cinco temas, publicación
 y respuesta conservadas tras recargar; formulario de reclamación y folio consultable
 tras recargar; tres páginas sin desbordamiento a 390 px y sin errores de consola.
+
+## Libro de reclamaciones y tutorial del cuidador, 11/11/2026
+
+Implementación local en `codex/fuerte-reclamos-recorrido`, pendiente de autorización de despliegue. Fuentes, alcance de demostración y pruebas en [docs/reclamos-recorrido.md](docs/reclamos-recorrido.md). Tutorial repetible con Ver tutorial o `/app?tour=1`. Sin cambios de esquema, backend, autenticación de IA ni servicios del VPS.

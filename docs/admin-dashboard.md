@@ -1,6 +1,6 @@
 # Dashboard general de Fuerte
 
-Implementado y verificado localmente el 16/11/2026. Pendiente de autorización específica para publicar junto con la actualización del cuidador.
+Publicado el 16/11/2026 a las 15:43 de Lima, junto con la actualización del cuidador y con el sí explícito de Simon. Commit funcional c3043fe, PR 11.
 
 El superadministrador entra al «Dashboard general». Desde cualquier centro puede volver con ese mismo botón; «Resumen del centro» conserva el contexto del establecimiento. Se mantienen la gestión de centros, usuarios, personal y pacientes.
 
@@ -25,4 +25,6 @@ La API usa un número fijo de consultas y un límite de 100 centros. No incorpor
 - Revisión independiente de autorización y privacidad sin hallazgos bloqueantes; comprobación adicional de medianoche de Lima y ventana inclusiva de 30 días.
 - TypeScript, Oxlint, compilación del producto y pruebas existentes de permisos clínicos correctos.
 
-Capturas técnicas: `work/admin-dashboard-20261116/`. No son cifras del servidor; son fixtures de prueba en memoria. La publicación debe incluir los estáticos compilados, `server/clinics.mjs` y el nuevo `server/platform-stats.mjs`, preservando el volumen y los demás servicios.
+Capturas técnicas: `work/admin-dashboard-20261116/`. No son cifras del servidor; son fixtures de prueba en memoria. Se publicaron los estáticos compilados, `server/clinics.mjs` y el nuevo `server/platform-stats.mjs`, preservando el volumen y los demás servicios.
+
+Verificación en el VPS: servicio healthy, seis hashes HTTPS coincidentes, rechazo 401 y cache-control no-store para consultas sin sesión. La función nueva se ejecutó además sobre SQLite de producción abierta en modo solo lectura: 30 fechas, estados que suman el total de perfiles y recuentos válidos. No se creó ninguna cuenta, sesión o registro de prueba en producción. Release y respaldo documentados en `docs/caregiver-refresh.md`.

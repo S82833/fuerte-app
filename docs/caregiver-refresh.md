@@ -1,6 +1,6 @@
 # Actualización del cuidador y separación de la navegación
 
-Preparado localmente el 16/11/2026. Pendiente de autorización específica para publicar esta versión.
+Publicado el 16/11/2026 a las 15:43 de Lima con el sí explícito de Simon: «si dale publica todo». Commit funcional c3043fe, PR 11.
 
 El encabezado del cuidador incorpora «Actualizar información». En pantallas táctiles, un desplazamiento vertical hacia abajo de al menos 110 px, iniciado en el extremo superior de la página, ejecuta la misma lectura. La interfaz muestra cuándo soltar, cuándo está actualizando y si hubo un error. La actualización consulta perfiles, historial, semana, conversación y seguimiento del centro, conservando los formularios montados y sus borradores. No registra dosis, modifica pautas, envía mensajes ni concede permisos.
 
@@ -15,3 +15,7 @@ El espacio inferior se reserva después de los enlaces del pie. Un ResizeObserve
 `scripts/caregiver-refresh-browser-check.mjs` usa Chromium táctil y una base SQLite en memoria. Crea una solicitud y la acepta mediante la API del personal; verifica la actualización visible, recuperación del foco, error 503 y reintento, umbral del gesto, rechazo de gestos desde el medio de la página o un campo, conservación del borrador y ausencia de escrituras desde la página. Comprueba los seis enlaces del pie en 390x844, 320x568, 844x390 y 1366x768. La mutación temporal del umbral de 110 a 999 provoca el fallo esperado; restaurado el paquete, la prueba pasa.
 
 Capturas técnicas en `work/caregiver-refresh-20261116/`. La simulación de navegador no sustituye una comprobación posterior en un iPhone y Android físicos con la PWA instalada.
+
+## Publicación
+
+Release `/home/ubuntu/fuerte-app/.releases/caregiver-dashboard-20261116T204341Z`. Imagen `sha256:e32f486f05f6b78f9a178ec2286f76e734a87809cfd53e5adf5ecc227322c51a`; respaldo `fuerte-app:before-dashboard-20261116T204341Z`. Paquete de 133 368 bytes. Candidato aislado sin red y base efímera verificado antes de reemplazar solo el servicio app. Seis archivos públicos HTTPS verificados por hash. Volumen, esquema e integridad SQLite sin cambios; otros contenedores conservan sus identificadores. Las pestañas o PWA abiertas pueden necesitar cerrarse completamente y volver a abrirse para activar el nuevo service worker sin perder borradores.

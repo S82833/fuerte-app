@@ -1,0 +1,16 @@
+html.fuerte-refresh-enabled{overscroll-behavior-y:none}
+.caregiver-header-actions{display:flex;align-items:center;gap:4px}
+.app-shell output.small-copy{display:block}
+.refresh-status{position:fixed;z-index:25;left:50%;top:calc(var(--f-header) + 8px);transform:translateX(-50%);display:flex;align-items:center;gap:8px;width:max-content;max-width:calc(100vw - 32px);padding:10px 16px;border:1px solid var(--f-outline);border-radius:16px;background:var(--f-surface);box-shadow:0 4px 16px #203d2620;color:var(--f-text);font-size:14px;visibility:hidden;pointer-events:none}
+.refresh-status.is-visible{visibility:visible}
+.refresh-spinning{animation:refresh-spin 1s linear infinite}
+@keyframes refresh-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.refresh-spinning{animation:none}}
+/* Reserve space after the footer, not before it: the last links must scroll above the bar. */
+.app-shell.has-nav .app-main{padding-bottom:24px}
+.app-shell.has-nav .legal-auth-links{padding-bottom:calc(var(--caregiver-nav-height,calc(86px + env(safe-area-inset-bottom))) + 24px);font-size:14px;gap:8px 20px}
+.app-shell .legal-auth-links a{display:inline-flex;align-items:center;min-height:44px}
+@media(min-width:960px){
+  .app-shell.has-nav{grid-template-rows:var(--f-header) 1fr auto;grid-template-areas:"header header" "nav main" "nav footer"}
+  .app-shell.has-nav .legal-auth-links{grid-area:footer;padding-bottom:24px}
+}

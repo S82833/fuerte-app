@@ -1,7 +1,7 @@
 /* eslint-disable next/no-img-element -- Static Vite entry; no Next image server. */
 /* eslint-disable next/no-html-link-for-pages -- These public documents are served by the product HTTP server, outside the Next router. */
 import {createRoot} from 'react-dom/client';
-import {useEffect,useState,lazy,Suspense,type SubmitEvent} from 'react';
+import {useEffect,useRef,useState,lazy,Suspense,type SubmitEvent} from 'react';
 import {Heart,House,MessageCircle,ClipboardList,LogOut,Send,Sparkles} from 'lucide-react';
 import '../app/globals.css';
 import './product.css';
@@ -11,6 +11,7 @@ import {Week} from './Week';
 import {Care} from './Care';
 import {DoseCard,TreatmentCard,PatientIdentity,ChatConsent,HistoryPanel,type RecordItem} from './Caregiver';
 import {PwaSupport,registerProductWorker} from './Pwa';
+import {RefreshControl} from './RefreshControl';
 import {GuidedTour} from './GuidedTour';
 import {hasUnsavedTourWork,tourMayStart} from './tour-state.mjs';
 import type {Workspace} from './Clinical';
@@ -32,6 +33,8 @@ function App(){
   useEffect(()=>{if(loading)return;const destination=user?'/app':'/login';if(window.location.pathname!==destination)window.history.replaceState(null,'',destination+window.location.search+window.location.hash);},[loading,user]);
   useEffect(()=>{if(!user)return;let active=true;api<Workspace>('/workspace').then(w=>{if(active){setWorkspace(w);if(w.superadmin||w.memberships.length)setClinical(true);}}).catch(()=>{}).finally(()=>{if(active)setWorkspaceReady(true);});return()=>{active=false;};},[user]);
   const [recordsPatient,setRecordsPatient]=useState(''),[doseDate,setDoseDate]=useState(''),[refresh,setRefresh]=useState(0),[historyKind,setHistoryKind]=useState<string|undefined>();
+  const refreshScope=useRef({userId:user?.id,selected});
+  useEffect(()=>{refreshScope.current={userId:user?.id,selected};},[user?.id,selected]);
   const patient=patients.find(p=>p.id===selected);
   const navigate=(next:string,kind?:string)=>{setTab(next);setHistoryKind(kind);setCreating(false);setError('');setNotice('');};
   async function persist(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}finally{setBusy(false);}}
@@ -41,6 +44,24 @@ function App(){
   useEffect(()=>{api<{user:{id:string,name:string}}>('/me').then(async data=>{beginSession(data.user);await loadPatients();}).catch(()=>{}).finally(()=>setLoading(false));},[]);
   // eslint-disable-next-line react/react-compiler -- Clear the previous profile immediately before fetching its replacement.
   useEffect(()=>{setRecords([]);setMessages([]);setError('');setNotice('');setConsent(false);setHistoryKind(undefined);setRecordsPatient('');if(!selected)return;let active=true;Promise.all([api<{items:RecordItem[],nextCursor:number|null}>(`/patients/${selected}/records`),api<{items:Message[],available:boolean}>(`/patients/${selected}/chat`),api<WeekData>(`/patients/${selected}/week`)]).then(([r,c,w])=>{if(active){setRecords(r.items);setCursor(r.nextCursor);setMessages(c.items);setAvailable(c.available);setDoseDate(w.days.find(d=>d.date===today()&&d.status==='given')?.date||'');setRecordsPatient(selected);}}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;};},[selected,refresh]);
+  async function refreshInformation(){
+    const scope=refreshScope.current;
+    setBusy(true);
+    try{
+      const pending:Promise<void>[]=[];
+      window.dispatchEvent(new CustomEvent('fuerte:refresh',{detail:{waitUntil:(promise:Promise<void>)=>pending.push(promise)}}));
+      const [profiles,details]=await Promise.all([
+        api<{items:Patient[]}>('/patients'),
+        selected?Promise.all([api<{items:RecordItem[],nextCursor:number|null}>(`/patients/${selected}/records`),api<{items:Message[],available:boolean}>(`/patients/${selected}/chat`),api<WeekData>(`/patients/${selected}/week`)]):null,
+        ...pending
+      ]);
+      if(refreshScope.current.userId!==scope.userId||refreshScope.current.selected!==scope.selected)return;
+      setPatients(profiles.items);
+      setSelected(previous=>profiles.items.some(p=>p.id===previous)?previous:profiles.items[0]?.id||'');
+      if(details){const [r,c,w]=details;setRecords(r.items);setCursor(r.nextCursor);setMessages(c.items);setAvailable(c.available);setDoseDate(w.days.find(d=>d.date===today()&&d.status==='given')?.date||'');}
+      // Keep form components mounted so unfinished notes and chat text survive a refresh.
+    }finally{setBusy(false);}
+  }
   async function action(fn:()=>Promise<void>){setBusy(true);setError('');setNotice('');try{await fn();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
   const submit=(fn:(data:FormData,form:HTMLFormElement)=>Promise<void>)=>(event:SubmitEvent<HTMLFormElement>)=>{event.preventDefault();const form=event.currentTarget;void action(()=>fn(new FormData(form),form));};
   async function record(kind:string,body:string,occurred=today()){await api(`/patients/${selected}/records`,{kind,body,occurred},'POST',crypto.randomUUID());await loadRecords(selected);setNotice('Registro guardado en tu historial.');}
@@ -48,7 +69,7 @@ function App(){
   const hasUnsavedWork=()=>hasUnsavedTourWork(document);
   const tourReady=!!user&&patientsReady&&tourMayStart({loading,workspaceReady,clinical,busy,creating,profileReady:!patients.length||recordsPatient===selected,hasUnsavedWork:false});
   if(user&&clinical&&workspace)return <Suspense fallback={<output>Cargando panel de salud…</output>}><Clinical workspace={workspace} onCaregiver={()=>setClinical(false)} onLogout={()=>void action(async()=>{await api('/logout',{});clearSession();})}/></Suspense>;
-  return <div className={`phone-shell app-shell${user?' has-nav':''}`} data-tab={user?tab:'auth'}><header className="app-header"><div className="brand"><img src="/pwa/brand-96.png" alt=""/><div><strong>Fuerte</strong><span><i/>Un paso a la vez</span></div></div>{user&&<button className="icon-button" aria-label="Cerrar sesión" disabled={busy} onClick={()=>void action(async()=>{await api('/logout',{});clearSession();})}><LogOut size={20}/></button>}</header><main id="main" className="app-main"><PwaSupport/>
+  return <div className={`phone-shell app-shell${user?' has-nav':''}`} data-tab={user?tab:'auth'}><header className="app-header"><div className="brand"><img src="/pwa/brand-96.png" alt=""/><div><strong>Fuerte</strong><span><i/>Un paso a la vez</span></div></div>{user&&<div className="caregiver-header-actions"><RefreshControl onRefresh={refreshInformation} disabled={busy||loading||!patientsReady||(!!selected&&recordsPatient!==selected)}/><button className="icon-button" aria-label="Cerrar sesión" disabled={busy} onClick={()=>void action(async()=>{await api('/logout',{});clearSession();})}><LogOut size={20}/></button></div>}</header><main id="main" className="app-main"><PwaSupport/>
     {error&&<div role="alert" className="error-box">{error}</div>}{notice&&<output className="success">{notice}</output>}
     {loading?<output>Cargando tu espacio…</output>:!user?<div className="auth-layout"><div className="welcome-art"><img src="/assets/family.jpg" alt="Ilustración de una familia"/></div><div className="page-intro"><p className="eyebrow">CUIDAR, ACOMPAÑAR, AVANZAR</p><h1>Cada pequeño paso cuenta.</h1><p>Un espacio para acompañar el tratamiento de la anemia y recordar lo que importa.</p></div><div className="auth-form"><form className="product-form" onSubmit={submit(async data=>{const result=await api<{user:{id:string,name:string}}>(signup?'/signup':'/login',{email:data.get('email'),password:data.get('password'),name:data.get('name'),consent:data.get('consent')==='on'});beginSession(result.user);await loadPatients();})}>{signup&&<label>Tu nombre<input name="name" autoComplete="name" required maxLength={80}/></label>}<label>Correo electrónico<input name="email" type="email" autoComplete="email" required/></label><label>Contraseña<input name="password" type="password" autoComplete={signup?'new-password':'current-password'} minLength={signup?12:1} maxLength={128} required/></label>{signup&&<><p className="small-copy">Usa al menos 12 caracteres. Esta primera versión aún no permite recuperar contraseñas por correo.</p><label className="check-label"><input name="consent" type="checkbox" required/>Soy responsable de los datos que registre y autorizo guardarlos en Fuerte para realizar el seguimiento.</label><p className="small-copy">Los datos se almacenan en el servidor del proyecto. Solo se envía contexto a OpenAI si autorizas el chat. No registres DNI, direcciones ni información innecesaria.</p></>}<p className="small-copy">Consulta los <a href="/terminos" target="_blank" rel="noopener noreferrer">términos y condiciones</a> y la <a href="/privacidad" target="_blank" rel="noopener noreferrer">política de privacidad de datos</a>. Demostración con datos ficticios.</p><button className="action primary" disabled={busy}>{busy?'Un momento…':signup?'Crear mi cuenta':'Entrar'}</button></form><button className="text-button" onClick={()=>{setSignup(!signup);setError('');}}>{signup?'Ya tengo una cuenta':'Crear una cuenta'}</button></div></div>:<>
     {workspace&&(workspace.superadmin||workspace.memberships.length>0)&&<button className="action secondary" onClick={()=>setClinical(true)}>Abrir panel de salud</button>}

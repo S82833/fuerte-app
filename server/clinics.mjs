@@ -1,4 +1,5 @@
 import {randomUUID} from 'node:crypto';
+import {platformOverview} from './platform-stats.mjs';
 export const PERMISSIONS=['read_patients','write_followups','manage_assignments','manage_staff'];
 export const NURSE_PERMISSIONS=['read_patients','write_followups'];
 export const CLINIC_SCHEMA=`
@@ -26,6 +27,10 @@ export async function clinicRoutes({req,url,user,store,send,readJson,check,text,
   const input=()=>readJson(req);
   if(path==='/api/v1/workspace'&&method==='GET'){send(200,root);return true;}
   if(path==='/api/v1/centers'&&method==='GET'){send(200,{items:db.prepare('SELECT id,name,kind,city FROM clinics WHERE active=1 ORDER BY name LIMIT 100').all()});return true;}
+  if(path==='/api/v1/platform/overview'&&method==='GET'){
+    check(root.superadmin,'No tienes acceso a la administración global.',403);
+    send(200,platformOverview(db));return true;
+  }
   if(path==='/api/v1/platform/users'&&method==='GET'){
     check(root.superadmin,'No tienes acceso a la administración global.',403);
     const cursor=Number(url.searchParams.get('after')||0),query=text(url.searchParams.get('q')||'',100,false);check(Number.isSafeInteger(cursor)&&cursor>=0,'Cursor inválido.');
